@@ -15,6 +15,26 @@ import { FullComponent } from './layouts/full/full.component';
 import { AppHeaderComponent } from './layouts/full/header/header.component';
 import { AppSidebarComponent } from './layouts/full/sidebar/sidebar.component';
 import { RegisterComponent } from './register/register.component';
+import {
+  NgxUiLoaderModule,
+  NgxUiLoaderConfig,
+  SPINNER,
+  PB_DIRECTION,
+} from 'ngx-ui-loader';
+
+const ngxUiLoaderConfig: NgxUiLoaderConfig = {
+  text: 'Loading...',
+  textColor: '#FFFFFF',
+  textPosition: 'center-center',
+  pbColor: 'red',
+  bgsColor: 'red',
+  fgsColor: 'red',
+  fgsType: SPINNER.cubeGrid,
+  fgsSize: 100,
+  pbDirection: PB_DIRECTION.leftToRight,
+  pbThickness: 5,
+};
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,6 +55,7 @@ import { RegisterComponent } from './register/register.component';
     FlexLayoutModule,
     SharedModule,
     HttpClientModule,
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
   ],
   providers: [],
   bootstrap: [AppComponent],
