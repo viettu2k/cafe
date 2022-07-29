@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -13,15 +14,17 @@ import { SharedModule } from './shared/shared.module';
 import { FullComponent } from './layouts/full/full.component';
 import { AppHeaderComponent } from './layouts/full/header/header.component';
 import { AppSidebarComponent } from './layouts/full/sidebar/sidebar.component';
+import { RegisterComponent } from './register/register.component';
 @NgModule({
-  declarations: [	
+  declarations: [
     AppComponent,
     HomeComponent,
     BestSellerComponent,
     FullComponent,
     AppHeaderComponent,
-    AppSidebarComponent
-   ],
+    AppSidebarComponent,
+    RegisterComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -30,9 +33,10 @@ import { AppSidebarComponent } from './layouts/full/sidebar/sidebar.component';
     ReactiveFormsModule,
     MaterialModule,
     FlexLayoutModule,
-    SharedModule
+    SharedModule,
+    HttpClientModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
