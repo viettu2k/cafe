@@ -1,3 +1,4 @@
+import { ForgotPasswordComponent } from './../forgot-password/forgot-password.component';
 import { RegisterComponent } from './../register/register.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Component, OnInit } from '@angular/core';
@@ -16,5 +17,11 @@ export class HomeComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '550px';
     this.dialog.open(RegisterComponent, dialogConfig);
+  }
+
+  forgotPasswordAction() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '550px';
+    this.dialog.open(ForgotPasswordComponent, dialogConfig);
   }
 }
