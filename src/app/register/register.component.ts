@@ -27,7 +27,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private ngxService: NgxUiLoaderService
   ) {}
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    if (this.loginSub) {
+      this.loginSub.unsubscribe();
+    }
   }
 
   ngOnInit(): void {
@@ -77,11 +79,5 @@ export class RegisterComponent implements OnInit, OnDestroy {
           );
         }
       );
-  }
-
-  OnDestroyy(): void {
-    if (this.loginSub) {
-      this.loginSub.unsubscribe();
-    }
   }
 }
