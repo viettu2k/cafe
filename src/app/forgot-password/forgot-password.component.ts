@@ -37,26 +37,28 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   handleSubmit() {
     this.ngxService.start();
     const { email } = this.forgotPasswordForm.value;
-    this.userService.forgotPassword({ email }).subscribe(
-      (response: any) => {
-        this.ngxService.stop();
-        this.responseMessage = response?.message;
-        this.dialogRef.close();
-        this.snackbarService.openSnackBar(this.responseMessage, '');
-      },
-      (error) => {
-        this.ngxService.stop();
-        if (error.error?.message) {
-          this.responseMessage = error.error.message;
-        } else {
-          this.responseMessage = GlobalConstants.genericError;
+    this.forgotPasswordSub = this.userService
+      .forgotPassword({ email })
+      .subscribe(
+        (response: any) => {
+          this.ngxService.stop();
+          this.responseMessage = response?.message;
+          this.dialogRef.close();
+          this.snackbarService.openSnackBar(this.responseMessage, '');
+        },
+        (error) => {
+          this.ngxService.stop();
+          if (error.error?.message) {
+            this.responseMessage = error.error.message;
+          } else {
+            this.responseMessage = GlobalConstants.genericError;
+          }
+          this.snackbarService.openSnackBar(
+            this.responseMessage,
+            GlobalConstants.error
+          );
         }
-        this.snackbarService.openSnackBar(
-          this.responseMessage,
-          GlobalConstants.error
-        );
-      }
-    );
+      );
   }
 
   ngOnDestroy(): void {
