@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class RegisterComponent implements OnInit, OnDestroy {
   registerForm: any = FormGroup;
   responseMessage: string = '';
-  loginSub!: Subscription;
+  registerSub!: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -26,11 +26,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<RegisterComponent>,
     private ngxService: NgxUiLoaderService
   ) {}
-  ngOnDestroy(): void {
-    if (this.loginSub) {
-      this.loginSub.unsubscribe();
-    }
-  }
 
   ngOnInit(): void {
     this.registerForm = this.formBuilder.group({
@@ -56,7 +51,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   handleSubmit() {
     this.ngxService.start();
     const { name, email, contact, password } = this.registerForm.value;
-    this.loginSub = this.userService
+    this.registerSub = this.userService
       .register({ name, email, contact, password })
       .subscribe(
         (response: any) => {
@@ -79,5 +74,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
           );
         }
       );
+  }
+
+  ngOnDestroy(): void {
+    if (this.registerSub) {
+      this.registerSub.unsubscribe();
+    }
   }
 }

@@ -1,48 +1,52 @@
-import { Subscription } from 'rxjs';
 import { GlobalConstants } from './../shared/global-constants';
-import { SnackbarService } from './../services/snackbar/snackbar.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { RegisterComponent } from './../register/register.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { SnackbarService } from './../services/snackbar/snackbar.service';
 import { UserService } from './../services/user/user.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.scss'],
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
 })
-export class ForgotPasswordComponent implements OnInit, OnDestroy {
-  forgotPasswordForm: any = FormGroup;
-  responseMessage: any;
-  forgotPasswordSub!: Subscription;
+export class LoginComponent implements OnInit, OnDestroy {
+  loginForm: any = FormGroup;
+  responseMessage: string = '';
+  loginSub!: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
+    private router: Router,
     private userService: UserService,
-    private dialogRef: MatDialogRef<ForgotPasswordComponent>,
-    private ngxService: NgxUiLoaderService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private dialogRef: MatDialogRef<RegisterComponent>,
+    private ngxService: NgxUiLoaderService
   ) {}
 
   ngOnInit(): void {
-    this.forgotPasswordForm = this.formBuilder.group({
+    this.loginForm = this.formBuilder.group({
       email: [
         null,
         [Validators.required, Validators.pattern(GlobalConstants.emailRegex)],
       ],
+      password: [null, [Validators.required, Validators.minLength(6)]],
     });
   }
 
   handleSubmit() {
     this.ngxService.start();
-    const { email } = this.forgotPasswordForm.value;
-    this.userService.forgotPassword({ email }).subscribe(
+    const { email, password } = this.loginForm.value;
+    this.loginSub = this.userService.login({ email, password }).subscribe(
       (response: any) => {
         this.ngxService.stop();
-        this.responseMessage = response?.message;
         this.dialogRef.close();
-        this.snackbarService.openSnackBar(this.responseMessage, '');
+        localStorage.setItem('token', response.token);
+        this.router.navigate(['/cafe/dashboard']);
       },
       (error) => {
         this.ngxService.stop();
@@ -60,8 +64,8 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.forgotPasswordSub) {
-      this.forgotPasswordSub.unsubscribe();
+    if (this.loginSub) {
+      this.loginSub.unsubscribe();
     }
   }
 }
