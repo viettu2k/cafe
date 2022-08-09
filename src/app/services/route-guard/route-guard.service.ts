@@ -29,7 +29,6 @@ export class RouteGuardService {
 
     let checkRole = false;
     for (const element of expectedRoleArray) {
-      console.log(element);
       if (tokenPayload.role === element) {
         checkRole = true;
       }
