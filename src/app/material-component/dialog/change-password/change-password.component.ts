@@ -48,8 +48,7 @@ export class ChangePasswordComponent implements OnInit {
 
   handleSubmit() {
     this.ngxService.start();
-    const { oldPassword, newPassword, confirmPassword } =
-      this.changePasswordForm.value;
+    const { oldPassword, newPassword } = this.changePasswordForm.value;
     this.changePasswordSub = this.userService
       .changePassword({ oldPassword, newPassword })
       .subscribe(
