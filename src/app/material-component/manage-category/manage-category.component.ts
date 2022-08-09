@@ -1,7 +1,8 @@
+import { CategoryComponent } from './../dialog/category/category.component';
 import { GlobalConstants } from './../../shared/global-constants';
 import { Router } from '@angular/router';
 import { SnackbarService } from './../../services/snackbar/snackbar.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CategoryService } from './../../services/category/category.service';
 import { Component, OnInit } from '@angular/core';
@@ -56,7 +57,38 @@ export class ManageCategoryComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  handleAddAction() {}
+  handleAddAction() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      action: 'Add',
+    };
+    dialogConfig.width = '850px';
+    const dialogRef = this.dialog.open(CategoryComponent, dialogConfig);
+    this.router.events.subscribe((event) => {
+      dialogRef.close();
+    });
+    const sub = dialogRef.componentInstance.onAddCategory.subscribe(
+      (response: any) => {
+        this.tableData();
+      }
+    );
+  }
 
-  handleEditAction() {}
+  handleEditAction(values: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      action: 'Edit',
+      data: values,
+    };
+    dialogConfig.width = '850px';
+    const dialogRef = this.dialog.open(CategoryComponent, dialogConfig);
+    this.router.events.subscribe((event) => {
+      dialogRef.close();
+    });
+    const sub = dialogRef.componentInstance.onAddCategory.subscribe(
+      (response: any) => {
+        this.tableData();
+      }
+    );
+  }
 }

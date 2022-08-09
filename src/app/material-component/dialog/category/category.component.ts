@@ -40,8 +40,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
     });
     if (this.dialogData.action === 'Edit') {
       this.dialogAction = 'Edit';
-      this.action = 'Update';
-      this.categoryForm.patchValue(this.dialogData.category);
+      this.action = 'Edit';
+      this.categoryForm.patchValue(this.dialogData.data);
     }
   }
 

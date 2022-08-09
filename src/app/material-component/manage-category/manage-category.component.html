@@ -1,11 +1,6 @@
-<mat-card>
-  <strong><span>Manage Category</span></strong>
-  <button
-    mat-flat-button
-    color="primary"
-    class="float-right"
-    (click)="handleAddAction()"
-  >
+<mat-card class="manage-category">
+  <strong class="self-center"><span>Manage Category</span></strong>
+  <button mat-flat-button color="primary" (click)="handleAddAction()">
     Add Category
   </button>
 </mat-card>
@@ -35,7 +30,7 @@
           mat-icon-button
           color="primary"
           matTooltip="Edit"
-          (click)="handleEditAction()"
+          (click)="handleEditAction(element)"
         >
           <mat-icon>edit</mat-icon>
         </button>

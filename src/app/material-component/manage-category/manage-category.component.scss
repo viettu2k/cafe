@@ -1,5 +1,5 @@
-.float-right {
-  float: right;
+.self-center {
+  align-self: center;
 }
 
 mat-card {
@@ -8,4 +8,10 @@ mat-card {
 
 table {
   width: 100%;
+}
+
+.manage-category {
+  display: flex;
+  justify-content: space-between;
+  align-self: center;
 }
