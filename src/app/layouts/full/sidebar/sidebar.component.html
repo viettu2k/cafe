@@ -8,7 +8,7 @@
     <a
       appAccordionToggle
       [routerLink]="['/cafe', menuItem.state]"
-      *ngIf="menuItem.role === '' || menuItem === tokenPayload.role"
+      *ngIf="menuItem.role === '' || menuItem.role === tokenPayload.role"
     >
       <mat-icon>{{ menuItem.icon }}</mat-icon>
       <span>{{ menuItem.name }}</span>
