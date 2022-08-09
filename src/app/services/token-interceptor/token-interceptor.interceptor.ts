@@ -29,7 +29,6 @@ export class TokenInterceptorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (error instanceof HttpErrorResponse) {
-          console.log(error);
           if (error.status === 401 || error.status === 403) {
             if (this.router.url === '/') {
               // Do nothing

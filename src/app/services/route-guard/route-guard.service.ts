@@ -22,7 +22,6 @@ export class RouteGuardService {
     let tokenPayload: any;
     try {
       tokenPayload = jwt_decode(token);
-      console.log(tokenPayload);
     } catch (error) {
       localStorage.clear();
       this.router.navigate(['/']);
