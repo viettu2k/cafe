@@ -19,9 +19,10 @@ export class RouteGuardService {
     let expectedRoleArray = router.data.expectedRole;
 
     const token: any = localStorage.getItem('token');
-    var tokenPayload: any;
+    let tokenPayload: any;
     try {
       tokenPayload = jwt_decode(token);
+      console.log(tokenPayload);
     } catch (error) {
       localStorage.clear();
       this.router.navigate(['/']);
@@ -29,6 +30,7 @@ export class RouteGuardService {
 
     let checkRole = false;
     for (const element of expectedRoleArray) {
+      console.log(element);
       if (tokenPayload.role === element) {
         checkRole = true;
       }

@@ -1,4 +1,5 @@
-import { HttpClientModule } from '@angular/common/http';
+import { TokenInterceptorInterceptor } from './services/token-interceptor/token-interceptor.interceptor';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -61,7 +62,14 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     HttpClientModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
   ],
-  providers: [],
+  providers: [
+    HttpClientModule,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptorInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
