@@ -22,10 +22,14 @@ export class ProductService {
     });
   }
 
-  getProducts(data: any) {
+  updateStatus(data: any) {
     return this.httpClient.patch(`${this.url}/product/update-status`, data, {
       headers: new HttpHeaders().set('Content-Type', 'application/json'),
     });
+  }
+
+  getProducts() {
+    return this.httpClient.get(`${this.url}/product/get`);
   }
 
   delete(id: any) {

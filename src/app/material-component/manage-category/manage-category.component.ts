@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { CategoryComponent } from './../dialog/category/category.component';
 import { GlobalConstants } from './../../shared/global-constants';
 import { Router } from '@angular/router';
@@ -5,7 +6,7 @@ import { SnackbarService } from './../../services/snackbar/snackbar.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { CategoryService } from './../../services/category/category.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
@@ -13,10 +14,11 @@ import { MatTableDataSource } from '@angular/material/table';
   templateUrl: './manage-category.component.html',
   styleUrls: ['./manage-category.component.scss'],
 })
-export class ManageCategoryComponent implements OnInit {
-  displayedColums: string[] = ['name', 'edit'];
+export class ManageCategoryComponent implements OnInit, OnDestroy {
+  displayedColumns: string[] = ['name', 'edit'];
   dataSource: any;
-  responeMessage: string = '';
+  responseMessage: string = '';
+  manageCategorySub!: Subscription;
 
   constructor(
     private categoryService: CategoryService,
@@ -32,7 +34,7 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   tableData() {
-    this.categoryService.getCategories().subscribe(
+    this.manageCategorySub = this.categoryService.getCategories().subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.dataSource = new MatTableDataSource(response);
@@ -40,12 +42,12 @@ export class ManageCategoryComponent implements OnInit {
       (error: any) => {
         this.ngxService.stop();
         if (error.error?.message) {
-          this.responeMessage = error.error.message;
+          this.responseMessage = error.error.message;
         } else {
-          this.responeMessage = GlobalConstants.genericError;
+          this.responseMessage = GlobalConstants.genericError;
         }
         this.snackbarService.openSnackBar(
-          this.responeMessage,
+          this.responseMessage,
           GlobalConstants.error
         );
       }
@@ -90,5 +92,11 @@ export class ManageCategoryComponent implements OnInit {
         this.tableData();
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    if (this.manageCategorySub) {
+      this.manageCategorySub.unsubscribe();
+    }
   }
 }
