@@ -15,6 +15,12 @@ const MENUITEMS: Menu[] = [
     icon: 'category',
     role: 'admin',
   },
+  {
+    state: 'product',
+    name: 'Manage Product',
+    icon: 'inventory_2',
+    role: 'admin',
+  },
 ];
 
 @Injectable()

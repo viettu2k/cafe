@@ -32,10 +32,10 @@ export class TokenInterceptorInterceptor implements HttpInterceptor {
           if (error.status === 401 || error.status === 403) {
             if (this.router.url === '/') {
               // Do nothing
+            } else {
+              localStorage.clear();
+              this.router.navigate(['/']);
             }
-          } else {
-            localStorage.clear();
-            this.router.navigate(['/']);
           }
         }
         return throwError(error);
