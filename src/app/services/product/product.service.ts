@@ -35,4 +35,12 @@ export class ProductService {
   delete(id: any) {
     return this.httpClient.delete(`${this.url}/product/delete/${id}`);
   }
+
+  getProductsByCategory(id: any) {
+    return this.httpClient.get(`${this.url}/product/getByCategory/${id}`);
+  }
+
+  getById(id: any) {
+    return this.httpClient.get(`${this.url}/product/getById/${id}`);
+  }
 }
