@@ -1,9 +1,11 @@
+import { ConfirmationComponent } from './../dialog/confirmation/confirmation.component';
+import { ProductComponent } from './../dialog/product/product.component';
 import { Subscription } from 'rxjs';
 import { GlobalConstants } from './../../shared/global-constants';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { SnackbarService } from './../../services/snackbar/snackbar.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { ProductService } from './../../services/product/product.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -47,7 +49,7 @@ export class ManageProductComponent implements OnInit, OnDestroy {
       (error: any) => {
         this.ngxService.stop();
         if (error.error?.message) {
-          this.responseMessage = error.error.message;
+          this.responseMessage = error.error?.message;
         } else {
           this.responseMessage = GlobalConstants.genericError;
         }
@@ -64,13 +66,105 @@ export class ManageProductComponent implements OnInit, OnDestroy {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  handleAddAction() {}
+  handleAddAction() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      action: 'Add',
+    };
+    dialogConfig.width = '850px';
+    const dialogRef = this.dialog.open(ProductComponent, dialogConfig);
+    this.router.events.subscribe((event) => {
+      dialogRef.close();
+    });
+    const sub = dialogRef.componentInstance.onAddProduct.subscribe(
+      (response) => {
+        console.log(response);
+        this.tableData();
+      }
+    );
+  }
 
-  handleEditAction(value: any) {}
+  handleEditAction(value: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      action: 'Edit',
+      data: value,
+    };
+    dialogConfig.width = '850px';
+    const dialogRef = this.dialog.open(ProductComponent, dialogConfig);
+    this.router.events.subscribe((event) => {
+      dialogRef.close();
+    });
+    const sub = dialogRef.componentInstance.onEditProduct.subscribe(
+      (response: any) => {
+        this.tableData();
+      }
+    );
+  }
 
-  handleDeleteAction(value: any) {}
+  handleDeleteAction(value: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      message: `delete ${value.name} product`,
+    };
+    const dialogRef = this.dialog.open(ConfirmationComponent, dialogConfig);
+    const sub = dialogRef.componentInstance.onEmitStatusChange.subscribe(
+      (response) => {
+        this.ngxService.start();
+        this.deleteProduct(value.id);
+        dialogRef.close();
+      }
+    );
+  }
 
-  onChange(status: any, id: any) {}
+  deleteProduct(id: any) {
+    this.productService.delete(id).subscribe(
+      (response: any) => {
+        this.ngxService.stop();
+        this.tableData();
+        this.responseMessage = response?.message;
+        this.snackbarService.openSnackBar(this.responseMessage, '');
+      },
+      (error: any) => {
+        this.ngxService.stop();
+        if (error.error?.message) {
+          this.responseMessage = error.error?.message;
+        } else {
+          this.responseMessage = GlobalConstants.genericError;
+        }
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstants.error
+        );
+      }
+    );
+  }
+
+  onChange(status: any, id: any) {
+    const data = {
+      status: status.toString(),
+      id: id,
+    };
+    this.productService.updateStatus(data).subscribe(
+      (response: any) => {
+        this.ngxService.stop();
+        this.responseMessage = response?.message;
+        this.snackbarService.openSnackBar(this.responseMessage, '');
+      },
+      (error: any) => {
+        this.ngxService.stop();
+        if (error.error?.message) {
+          this.responseMessage = error.error?.message;
+        } else {
+          this.responseMessage = GlobalConstants.genericError;
+        }
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstants.error
+        );
+      }
+    );
+  }
 
   ngOnDestroy(): void {
     if (this.manageProductSub) {

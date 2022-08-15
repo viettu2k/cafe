@@ -43,7 +43,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         null,
         [Validators.required, Validators.pattern(GlobalConstants.nameRegex)],
       ],
-      category: [null, [Validators.required]],
+      categoryId: [null, [Validators.required]],
       description: [null, [Validators.required]],
       price: [null, [Validators.required]],
     });
@@ -51,7 +51,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     if (this.dialogData.action === 'Edit') {
       this.dialogAction = 'Edit';
       this.action = 'Edit';
-      this.productForm.patchValue(this.dialogData.product);
+      this.productForm.patchValue(this.dialogData.data);
     }
 
     this.getCategories();
@@ -85,9 +85,9 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   add() {
-    const { name, categoryId, desciption, price } = this.productForm.value;
+    const { name, categoryId, description, price } = this.productForm.value;
     this.productSub = this.productService
-      .add({ name, categoryId, desciption, price })
+      .add({ name, categoryId, description, price })
       .subscribe(
         (response: any) => {
           this.dialogRef.close();
@@ -96,6 +96,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.snackbarService.openSnackBar(this.responseMessage, '');
         },
         (error) => {
+          this.dialogRef.close();
           if (error.error?.message) {
             this.responseMessage = error.error.message;
           } else {
@@ -109,7 +110,32 @@ export class ProductComponent implements OnInit, OnDestroy {
       );
   }
 
-  edit() {}
+  edit() {
+    const { id } = this.dialogData.data;
+    const { name, categoryId, description, price } = this.productForm.value;
+    this.productSub = this.productService
+      .edit({ id, name, categoryId, description, price })
+      .subscribe(
+        (response: any) => {
+          this.dialogRef.close();
+          this.onEditProduct.emit();
+          this.responseMessage = response?.message;
+          this.snackbarService.openSnackBar(this.responseMessage, '');
+        },
+        (error) => {
+          this.dialogRef.close();
+          if (error.error?.message) {
+            this.responseMessage = error.error.message;
+          } else {
+            this.responseMessage = GlobalConstants.genericError;
+          }
+          this.snackbarService.openSnackBar(
+            this.responseMessage,
+            GlobalConstants.error
+          );
+        }
+      );
+  }
 
   ngOnDestroy(): void {
     if (this.productSub) {
