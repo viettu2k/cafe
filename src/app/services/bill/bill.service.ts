@@ -22,4 +22,14 @@ export class BillService {
       responseType: 'blob',
     });
   }
+
+  getBills() {
+    return this.httpClient.get(`${this.url}/bill/get-bills`);
+  }
+
+  delete(id: any) {
+    return this.httpClient.delete(`${this.url}/bill/delete/${id}`, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json'),
+    });
+  }
 }
