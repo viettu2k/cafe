@@ -4,6 +4,8 @@ export class GlobalConstants {
     'Something went wrong. Please try again later.';
   public static unauthorizated: string =
     'Your are not authorized persone to access this page.';
+  public static productExistError: string = 'Product already exist.';
+  public static productAdded: string = 'Product added successfully.';
 
   // Regex
   public static nameRegex: string = '[a-zA-Z0-9 ]*';
