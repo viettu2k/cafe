@@ -1,3 +1,5 @@
+import { saveAs } from 'file-saver';
+import { ConfirmationComponent } from './../dialog/confirmation/confirmation.component';
 import { Router } from '@angular/router';
 import { ViewBillProductsComponent } from './../dialog/view-bill-products/view-bill-products.component';
 import { GlobalConstants } from './../../shared/global-constants';
@@ -70,14 +72,68 @@ export class ViewBillComponent implements OnInit {
     dialogConfig.data = {
       data: values,
     };
-    dialogConfig.width = '100%';
-    const dialogRef = this.dialog.open(ViewBillProductsComponent);
+    dialogConfig.width = '50%';
+    const dialogRef = this.dialog.open(ViewBillProductsComponent, dialogConfig);
     this.router.events.subscribe(() => {
       dialogRef.close();
     });
   }
 
-  downloadReportAction(values: any) {}
+  downloadReportAction(values: any) {
+    this.ngxService.start();
+    let { name, email, uuid, contact, paymentMethod, total, productDetails } =
+      values;
+    this.billService
+      .getPDF({
+        name,
+        email,
+        uuid,
+        contact,
+        paymentMethod,
+        total,
+        productDetails,
+      })
+      .subscribe((response: any) => {
+        saveAs(response, uuid + '.pdf');
+        this.ngxService.stop();
+      });
+  }
 
-  handleDeleteAction(values: any) {}
+  handleDeleteAction(values: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      message: `delete ${values.name} bill`,
+    };
+    const dialogRef = this.dialog.open(ConfirmationComponent, dialogConfig);
+    const sub = dialogRef.componentInstance.onEmitStatusChange.subscribe(
+      (response) => {
+        this.ngxService.start();
+        this.deleteProduct(values.id);
+        dialogRef.close();
+      }
+    );
+  }
+
+  deleteProduct(id: any) {
+    this.billService.delete(id).subscribe(
+      (response: any) => {
+        this.ngxService.stop();
+        this.tableData();
+        this.responseMessage = response?.message;
+        this.snackbarService.openSnackBar(this.responseMessage, '');
+      },
+      (error: any) => {
+        this.ngxService.stop();
+        if (error.error?.message) {
+          this.responseMessage = error.error?.message;
+        } else {
+          this.responseMessage = GlobalConstants.genericError;
+        }
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstants.error
+        );
+      }
+    );
+  }
 }
