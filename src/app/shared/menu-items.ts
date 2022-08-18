@@ -33,6 +33,12 @@ const MENUITEMS: Menu[] = [
     icon: 'import_contacts',
     role: '',
   },
+  {
+    state: 'user',
+    name: 'View User',
+    icon: 'people',
+    role: 'admin',
+  },
 ];
 
 @Injectable()
