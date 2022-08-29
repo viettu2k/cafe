@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (localStorage.getItem('token') !== null) {
       this.homeSub = this.userService.checkToken().subscribe(
-        (response: any) => {
+        (_response: any) => {
           this.router.navigate(['/cafe/dashboard']);
         },
         (error: any) => {

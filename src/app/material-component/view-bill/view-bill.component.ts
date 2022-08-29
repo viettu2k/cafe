@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { saveAs } from 'file-saver';
 import { ConfirmationComponent } from './../dialog/confirmation/confirmation.component';
 import { Router } from '@angular/router';
@@ -7,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SnackbarService } from './../../services/snackbar/snackbar.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BillService } from 'src/app/services/bill/bill.service';
 
 @Component({
@@ -15,7 +16,7 @@ import { BillService } from 'src/app/services/bill/bill.service';
   templateUrl: './view-bill.component.html',
   styleUrls: ['./view-bill.component.scss'],
 })
-export class ViewBillComponent implements OnInit {
+export class ViewBillComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'name',
     'email',
@@ -26,6 +27,7 @@ export class ViewBillComponent implements OnInit {
   ];
   dataSource: any;
   responseMessage: string = '';
+  viewBillSub!: Subscription;
 
   constructor(
     private billService: BillService,
@@ -41,7 +43,7 @@ export class ViewBillComponent implements OnInit {
   }
 
   tableData() {
-    this.billService.getBills().subscribe(
+    this.viewBillSub = this.billService.getBills().subscribe(
       (response: any) => {
         this.ngxService.stop();
         console.log(response);
@@ -83,7 +85,7 @@ export class ViewBillComponent implements OnInit {
     this.ngxService.start();
     let { name, email, uuid, contact, paymentMethod, total, productDetails } =
       values;
-    this.billService
+    this.viewBillSub = this.billService
       .getPDF({
         name,
         email,
@@ -106,16 +108,17 @@ export class ViewBillComponent implements OnInit {
     };
     const dialogRef = this.dialog.open(ConfirmationComponent, dialogConfig);
     const sub = dialogRef.componentInstance.onEmitStatusChange.subscribe(
-      (response) => {
+      (_response) => {
         this.ngxService.start();
         this.deleteProduct(values.id);
         dialogRef.close();
       }
     );
+    sub.unsubscribe();
   }
 
   deleteProduct(id: any) {
-    this.billService.delete(id).subscribe(
+    this.viewBillSub = this.billService.delete(id).subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.tableData();
@@ -135,5 +138,11 @@ export class ViewBillComponent implements OnInit {
         );
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    if (this.viewBillSub) {
+      this.viewBillSub.unsubscribe();
+    }
   }
 }

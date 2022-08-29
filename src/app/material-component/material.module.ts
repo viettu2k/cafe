@@ -29,7 +29,7 @@ import { ManageUserComponent } from './manage-user/manage-user.component';
     FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
-    CdkTableModule
+    CdkTableModule,
   ],
   providers: [],
   declarations: [
@@ -42,7 +42,7 @@ import { ManageUserComponent } from './manage-user/manage-user.component';
     ProductComponent,
     ManageOrderComponent,
     ViewBillComponent,
-    ManageUserComponent    
-  ]
+    ManageUserComponent,
+  ],
 })
 export class MaterialComponentsModule {}

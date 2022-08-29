@@ -1,20 +1,21 @@
+import { Subscription } from 'rxjs';
 import { GlobalConstants } from './../../shared/global-constants';
 import { MatTableDataSource } from '@angular/material/table';
 import { SnackbarService } from './../../services/snackbar/snackbar.service';
-import { MatDialog } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { UserService } from './../../services/user/user.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-manage-user',
   templateUrl: './manage-user.component.html',
   styleUrls: ['./manage-user.component.scss'],
 })
-export class ManageUserComponent implements OnInit {
+export class ManageUserComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['name', 'email', 'contact', 'status'];
   dataSource: any;
   responseMessage: string = '';
+  manageUserSub!: Subscription;
 
   constructor(
     private userService: UserService,
@@ -28,7 +29,7 @@ export class ManageUserComponent implements OnInit {
   }
 
   tableData() {
-    this.userService.getUsers().subscribe(
+    this.manageUserSub = this.userService.getUsers().subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.dataSource = new MatTableDataSource(response);
@@ -59,7 +60,7 @@ export class ManageUserComponent implements OnInit {
       status: status.toString(),
       email: email,
     };
-    this.userService.update(data).subscribe(
+    this.manageUserSub = this.userService.update(data).subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.responseMessage = response?.message;
@@ -78,5 +79,11 @@ export class ManageUserComponent implements OnInit {
         );
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    if (this.manageUserSub) {
+      this.manageUserSub.unsubscribe();
+    }
   }
 }

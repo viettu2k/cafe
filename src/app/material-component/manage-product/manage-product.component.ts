@@ -73,7 +73,7 @@ export class ManageProductComponent implements OnInit, OnDestroy {
     };
     dialogConfig.width = '850px';
     const dialogRef = this.dialog.open(ProductComponent, dialogConfig);
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe((_event) => {
       dialogRef.close();
     });
     const sub = dialogRef.componentInstance.onAddProduct.subscribe(
@@ -82,6 +82,7 @@ export class ManageProductComponent implements OnInit, OnDestroy {
         this.tableData();
       }
     );
+    sub.unsubscribe();
   }
 
   handleEditAction(value: any) {
@@ -92,14 +93,15 @@ export class ManageProductComponent implements OnInit, OnDestroy {
     };
     dialogConfig.width = '850px';
     const dialogRef = this.dialog.open(ProductComponent, dialogConfig);
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe((_event) => {
       dialogRef.close();
     });
     const sub = dialogRef.componentInstance.onEditProduct.subscribe(
-      (response: any) => {
+      (_response: any) => {
         this.tableData();
       }
     );
+    sub.unsubscribe();
   }
 
   handleDeleteAction(value: any) {
@@ -109,16 +111,17 @@ export class ManageProductComponent implements OnInit, OnDestroy {
     };
     const dialogRef = this.dialog.open(ConfirmationComponent, dialogConfig);
     const sub = dialogRef.componentInstance.onEmitStatusChange.subscribe(
-      (response) => {
+      (_response) => {
         this.ngxService.start();
         this.deleteProduct(value.id);
         dialogRef.close();
       }
     );
+    sub.unsubscribe();
   }
 
   deleteProduct(id: any) {
-    this.productService.delete(id).subscribe(
+    this.manageProductSub = this.productService.delete(id).subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.tableData();
@@ -145,7 +148,7 @@ export class ManageProductComponent implements OnInit, OnDestroy {
       status: status.toString(),
       id: id,
     };
-    this.productService.updateStatus(data).subscribe(
+    this.manageProductSub = this.productService.updateStatus(data).subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.responseMessage = response?.message;

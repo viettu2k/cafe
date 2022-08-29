@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { GlobalConstants } from './../../shared/global-constants';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { BillService } from './../../services/bill/bill.service';
@@ -5,7 +6,7 @@ import { SnackbarService } from './../../services/snackbar/snackbar.service';
 import { ProductService } from './../../services/product/product.service';
 import { CategoryService } from './../../services/category/category.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -13,7 +14,7 @@ import { saveAs } from 'file-saver';
   templateUrl: './manage-order.component.html',
   styleUrls: ['./manage-order.component.scss'],
 })
-export class ManageOrderComponent implements OnInit {
+export class ManageOrderComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'name',
     'category',
@@ -29,6 +30,7 @@ export class ManageOrderComponent implements OnInit {
   price: any;
   totalAmount: number = 0;
   responseMessage: string = '';
+  manageOderSub!: Subscription;
 
   constructor(
     private formbuilder: FormBuilder,
@@ -68,7 +70,7 @@ export class ManageOrderComponent implements OnInit {
   }
 
   getCategories() {
-    this.categoryService.getCategories().subscribe(
+    this.manageOderSub = this.categoryService.getCategories().subscribe(
       (response: any) => {
         this.ngxService.stop();
         this.categories = response;
@@ -89,29 +91,31 @@ export class ManageOrderComponent implements OnInit {
   }
 
   getProductsByCategory(value: any) {
-    this.productService.getProductsByCategory(value.id).subscribe(
-      (response) => {
-        this.products = response;
-        this.manageOrderForm.controls['price'].setValue('');
-        this.manageOrderForm.controls['quantity'].setValue('');
-        this.manageOrderForm.controls['total'].setValue('');
-      },
-      (error: any) => {
-        if (error.error?.message) {
-          this.responseMessage = error.error?.message;
-        } else {
-          this.responseMessage = GlobalConstants.genericError;
+    this.manageOderSub = this.productService
+      .getProductsByCategory(value.id)
+      .subscribe(
+        (response) => {
+          this.products = response;
+          this.manageOrderForm.controls['price'].setValue('');
+          this.manageOrderForm.controls['quantity'].setValue('');
+          this.manageOrderForm.controls['total'].setValue('');
+        },
+        (error: any) => {
+          if (error.error?.message) {
+            this.responseMessage = error.error?.message;
+          } else {
+            this.responseMessage = GlobalConstants.genericError;
+          }
+          this.snackbarService.openSnackBar(
+            this.responseMessage,
+            GlobalConstants.error
+          );
         }
-        this.snackbarService.openSnackBar(
-          this.responseMessage,
-          GlobalConstants.error
-        );
-      }
-    );
+      );
   }
 
   getProductDetails(value: any) {
-    this.productService.getById(value.id).subscribe(
+    this.manageOderSub = this.productService.getById(value.id).subscribe(
       (response: any) => {
         this.price = response.price;
         this.manageOrderForm.controls['price'].setValue(response.price);
@@ -133,7 +137,7 @@ export class ManageOrderComponent implements OnInit {
     );
   }
 
-  setQuantity(value: any) {
+  setQuantity(_value: any) {
     let temp = this.manageOrderForm.controls['quantity'].value;
     if (temp > 0) {
       this.manageOrderForm.controls['total'].setValue(
@@ -219,7 +223,7 @@ export class ManageOrderComponent implements OnInit {
       totalAmount: this.totalAmount,
       productDetails: JSON.stringify(this.dataSource),
     };
-    this.billService.generateReport(data).subscribe(
+    this.manageOderSub = this.billService.generateReport(data).subscribe(
       (response: any) => {
         this.downloadFile(response?.uuid);
         this.manageOrderForm.reset();
@@ -245,9 +249,17 @@ export class ManageOrderComponent implements OnInit {
     let data = {
       uuid: fileName,
     };
-    this.billService.getPDF(data).subscribe((response: any) => {
-      saveAs(response, fileName + '.pdf');
-      this.ngxService.stop();
-    });
+    this.manageOderSub = this.billService
+      .getPDF(data)
+      .subscribe((response: any) => {
+        saveAs(response, fileName + '.pdf');
+        this.ngxService.stop();
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.manageOderSub) {
+      this.manageOderSub.unsubscribe();
+    }
   }
 }

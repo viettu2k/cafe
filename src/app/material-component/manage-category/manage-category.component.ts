@@ -66,14 +66,15 @@ export class ManageCategoryComponent implements OnInit, OnDestroy {
     };
     dialogConfig.width = '850px';
     const dialogRef = this.dialog.open(CategoryComponent, dialogConfig);
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe((_event) => {
       dialogRef.close();
     });
     const sub = dialogRef.componentInstance.onAddCategory.subscribe(
-      (response: any) => {
+      (_response: any) => {
         this.tableData();
       }
     );
+    sub.unsubscribe();
   }
 
   handleEditAction(values: any) {
@@ -84,14 +85,15 @@ export class ManageCategoryComponent implements OnInit, OnDestroy {
     };
     dialogConfig.width = '850px';
     const dialogRef = this.dialog.open(CategoryComponent, dialogConfig);
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe((_event) => {
       dialogRef.close();
     });
     const sub = dialogRef.componentInstance.onEditCategory.subscribe(
-      (response: any) => {
+      (_response: any) => {
         this.tableData();
       }
     );
+    sub.unsubscribe();
   }
 
   ngOnDestroy(): void {
